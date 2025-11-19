@@ -43,29 +43,27 @@ function processNode(node, settings) {
 }
 
 // Get settings first, then run the script
-chrome.storage.sync.get(
-  {
-    removeReadonly: true, // Default to true
-    removeDisabled: false, // Default to false
-  },
-  (settings) => {
-    // Run on the entire document body as soon as settings are loaded
-    processNode(document.body, settings);
+// Get settings first, then run the script
+browser.storage.sync.get({
+  removeReadonly: true, // Default to true
+  removeDisabled: false, // Default to false
+}).then((settings) => {
+  // Run on the entire document body as soon as settings are loaded
+  processNode(document.body, settings);
 
-    // Set up a MutationObserver to watch for new elements
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-          // Process all nodes that were added
-          mutation.addedNodes.forEach(node => processNode(node, settings));
-        }
-      });
+  // Set up a MutationObserver to watch for new elements
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList') {
+        // Process all nodes that were added
+        mutation.addedNodes.forEach(node => processNode(node, settings));
+      }
     });
+  });
 
-    // Start observing the body for child and subtree changes
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  }
-);
+  // Start observing the body for child and subtree changes
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+});
