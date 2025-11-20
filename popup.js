@@ -6,15 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconDisable = toggleButton.querySelector('.icon-disable');
 
   // Load the current enabled state
-  browser.storage.sync.get('isEnabled').then(({ isEnabled }) => {
+  chrome.storage.sync.get('isEnabled', ({ isEnabled }) => {
     updateButtonState(isEnabled);
   });
 
   // Toggle the enabled state
   toggleButton.addEventListener('click', () => {
-    browser.storage.sync.get('isEnabled').then(({ isEnabled }) => {
+    chrome.storage.sync.get('isEnabled', ({ isEnabled }) => {
       const newState = !isEnabled;
-      browser.storage.sync.set({ isEnabled: newState }).then(() => {
+      chrome.storage.sync.set({ isEnabled: newState }, () => {
         updateButtonState(newState);
       });
     });
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Open the settings page
   settingsButton.addEventListener('click', () => {
-    browser.runtime.openOptionsPage();
+    chrome.runtime.openOptionsPage();
     window.close(); // Close the popup
   });
 
